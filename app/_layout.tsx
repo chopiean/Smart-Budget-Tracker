@@ -2,17 +2,12 @@ import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { initDb } from "../db/db";
 
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    async function prepare() {
-      await initDb();
-      setReady(true);
-    }
-    prepare();
+    setReady(true);
   }, []);
 
   if (!ready) {

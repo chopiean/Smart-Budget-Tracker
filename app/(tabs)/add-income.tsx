@@ -1,11 +1,22 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { addTransaction } from "../../db/queries";
 
 export default function AddIncomeScreen() {
   const [amount, setAmount] = useState("");
-  const [source, setSource] = useState("Salary");
+  const [source, setSource] = useState("");
   const router = useRouter();
 
   const handleSave = async () => {
@@ -29,39 +40,87 @@ export default function AddIncomeScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Add Income</Text>
+    <SafeAreaView style={styles.safe}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1 }}
+      >
+        <ScrollView contentContainerStyle={styles.container}>
+          <Text style={styles.title}>Add Income</Text>
 
-      <Text style={styles.label}>Amount (€)</Text>
-      <TextInput
-        value={amount}
-        onChangeText={setAmount}
-        keyboardType="decimal-pad"
-        style={styles.input}
-      />
+          <View style={styles.card}>
+            <Text style={styles.label}>Amount (€)</Text>
+            <TextInput
+              value={amount}
+              onChangeText={setAmount}
+              keyboardType="decimal-pad"
+              placeholder="0.00"
+              placeholderTextColor="#555"
+              style={styles.input}
+            />
 
-      <Text style={styles.label}>Source</Text>
-      <TextInput
-        value={source}
-        onChangeText={setSource}
-        style={styles.input}
-        placeholder="Salary, Bonus..."
-      />
+            <Text style={styles.label}>Source</Text>
+            <TextInput
+              value={source}
+              onChangeText={setSource}
+              placeholder="Salary, Bonus..."
+              placeholderTextColor="#555"
+              style={styles.input}
+            />
+          </View>
 
-      <Button title="Save Income" onPress={handleSave} />
-    </View>
+          <TouchableOpacity style={styles.button} onPress={handleSave}>
+            <Text style={styles.buttonText}>Save Income</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#0b1020" },
-  title: { fontSize: 20, fontWeight: "bold", color: "#fff", marginBottom: 16 },
-  label: { color: "#ccc", marginTop: 8 },
-  input: {
-    backgroundColor: "#151b32",
+  safe: {
+    flex: 1,
+    backgroundColor: "#0b1020",
+  },
+  container: {
+    padding: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "700",
     color: "#fff",
-    padding: 8,
-    borderRadius: 8,
-    marginTop: 4,
+    textAlign: "center",
+    marginBottom: 24,
+  },
+  card: {
+    backgroundColor: "#161b2e",
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 40,
+  },
+  label: {
+    color: "#9da7c2",
+    marginBottom: 6,
+    fontSize: 15,
+  },
+  input: {
+    backgroundColor: "#1f253b",
+    color: "#fff",
+    padding: 12,
+    borderRadius: 10,
+    fontSize: 16,
+    marginBottom: 18,
+  },
+  button: {
+    backgroundColor: "#00e676",
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#000",
+    fontSize: 16,
+    fontWeight: "700",
   },
 });

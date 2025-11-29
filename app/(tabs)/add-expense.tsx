@@ -1,74 +1,141 @@
-import { useRouter } from "expo-router";
+import { addTransaction } from "@/db/transactions";
+import { useNavigation } from "expo-router";
 import { useState } from "react";
-import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
-import { addTransaction } from "../../db/queries";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function AddExpenseScreen() {
+  const nav = useNavigation();
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("Food");
+  const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
-  const router = useRouter();
 
-  const handleSave = async () => {
+  async function saveExpense() {
+    if (!amount) return Alert.alert("Missing amount");
+    if (!category) return Alert.alert("Missing category");
+
     const value = parseFloat(amount);
-    if (isNaN(value) || value <= 0) {
-      Alert.alert("Invalid amount");
-      return;
+    if (isNaN(value)) return Alert.alert("Invalid amount");
+
+    try {
+      await addTransaction({
+        type: "expense",
+        amount: value,
+        categoryId: 1, // later: dynamic category
+        description: description || "",
+        date: new Date().toISOString(),
+      });
+
+      Alert.alert("Success", "Expense saved!");
+      nav.goBack();
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Error saving expense");
     }
-
-    await addTransaction({
-      type: "expense",
-      amount: value,
-      categoryName: category,
-      description,
-      date: new Date().toISOString(),
-    });
-
-    Alert.alert("Expense saved");
-    router.push("/");
-  };
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Add Expense</Text>
+    <SafeAreaView style={styles.safe}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1 }}
+      >
+        <ScrollView contentContainerStyle={styles.container}>
+          <Text style={styles.title}>Add Expense</Text>
 
-      <Text style={styles.label}>Amount (€)</Text>
-      <TextInput
-        value={amount}
-        onChangeText={setAmount}
-        keyboardType="decimal-pad"
-        style={styles.input}
-      />
+          <View style={styles.card}>
+            <Text style={styles.label}>Amount (€)</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              placeholder="0.00"
+              placeholderTextColor="#555"
+              value={amount}
+              onChangeText={setAmount}
+            />
 
-      <Text style={styles.label}>Category</Text>
-      <TextInput
-        value={category}
-        onChangeText={setCategory}
-        style={styles.input}
-        placeholder="Food, Transport, etc."
-      />
+            <Text style={styles.label}>Category</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Food, Transport, etc."
+              placeholderTextColor="#555"
+              value={category}
+              onChangeText={setCategory}
+            />
 
-      <Text style={styles.label}>Description</Text>
-      <TextInput
-        value={description}
-        onChangeText={setDescription}
-        style={styles.input}
-        placeholder="Optional description"
-      />
+            <Text style={styles.label}>Description</Text>
+            <TextInput
+              style={[styles.input, { height: 80 }]}
+              placeholder="Optional description"
+              placeholderTextColor="#555"
+              multiline
+              value={description}
+              onChangeText={setDescription}
+            />
+          </View>
 
-      <Button title="Save Expense" onPress={handleSave} />
-    </View>
+          <TouchableOpacity style={styles.button} onPress={saveExpense}>
+            <Text style={styles.buttonText}>Save Expense</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#0b1020" },
-  title: { fontSize: 20, fontWeight: "bold", color: "#fff", marginBottom: 16 },
-  label: { color: "#ccc", marginTop: 8 },
+  safe: {
+    flex: 1,
+    backgroundColor: "#0b1020",
+  },
+  container: {
+    padding: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: "white",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  card: {
+    backgroundColor: "#161b2e",
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 40,
+  },
+  label: {
+    color: "#9da7c2",
+    marginBottom: 6,
+    fontSize: 15,
+  },
   input: {
-    backgroundColor: "#151b32",
+    backgroundColor: "#1f253b",
+    borderRadius: 10,
+    padding: 12,
     color: "#fff",
-    padding: 8,
-    borderRadius: 8,
-    marginTop: 4,
+    fontSize: 16,
+    marginBottom: 18,
+  },
+  button: {
+    backgroundColor: "#00e676",
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#000",
+    fontSize: 16,
+    fontWeight: "700",
   },
 });

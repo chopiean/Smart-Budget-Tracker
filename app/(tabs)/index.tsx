@@ -1,80 +1,94 @@
-import { Link } from "expo-router";
-import { Button, FlatList, StyleSheet, Text, View } from "react-native";
-import { ChartPie } from "../../components/ChartPie";
-import { ExpenseCard } from "../../components/ExpenseCard";
-import { useBudget } from "../../hooks/useBudget";
-import { useTransactions } from "../../hooks/useTransactions";
+import GlassButton from "@/components/GlassButton";
+import GlassCard from "@/components/GlassCard";
+import Screen from "@/components/Screen";
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { colors, spacing } from "../../constants/theme";
 
 export default function DashboardScreen() {
-  const { totalBalance, totalIncome, totalExpense, byCategory } = useBudget();
-  const { recentTransactions } = useTransactions();
-
   return (
-    <View style={styles.container}>
+    <Screen>
+      {/* Title */}
       <Text style={styles.title}>Smart Budget Tracker</Text>
 
-      {/* Balance summary */}
-      <View style={styles.balanceCard}>
-        <Text style={styles.balanceLabel}>Total Balance</Text>
-        <Text style={styles.balanceValue}>€{totalBalance.toFixed(2)}</Text>
-        <Text style={styles.subText}>
-          Income: €{totalIncome.toFixed(2)} | Expenses: €
-          {totalExpense.toFixed(2)}
-        </Text>
-      </View>
+      {/* Balance */}
+      <GlassCard style={styles.balanceCard}>
+        <Text style={styles.label}>Total Balance</Text>
+        <Text style={styles.balance}>€0.00</Text>
+        <Text style={styles.sub}>Income: €0.00 | Expenses: €0.00</Text>
+      </GlassCard>
 
-      {/* Spending chart */}
-      <View style={{ marginBottom: 16 }}>
-        <Text style={styles.sectionTitle}>This Month Spending</Text>
-        <ChartPie data={byCategory} />
-      </View>
+      {/* This Month Spending */}
+      <Text style={styles.sectionTitle}>This Month Spending</Text>
+      <GlassCard style={styles.centerCard}>
+        <Text style={styles.muted}>No data</Text>
+      </GlassCard>
 
       {/* Buttons */}
-      <View style={styles.actions}>
-        <Link href="/add-expense" asChild>
-          <Button title="Add Expense" />
-        </Link>
-        <Link href="/scan-receipt" asChild>
-          <Button title="Scan Receipt" />
-        </Link>
+      <View style={styles.row}>
+        <GlassButton
+          label="Add Expense"
+          variant="blue"
+          style={{ flex: 1, marginRight: 6 }}
+          // onPress={() => navigation.navigate("AddExpense")} // if you have it
+        />
+        <GlassButton
+          label="Scan Receipt"
+          variant="purple"
+          style={{ flex: 1, marginLeft: 6 }}
+          // onPress={() => navigation.navigate("Scan")}
+        />
       </View>
 
-      {/* Recent transactions */}
+      {/* Recent Transactions */}
       <Text style={styles.sectionTitle}>Recent Transactions</Text>
-      <FlatList
-        data={recentTransactions}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <ExpenseCard transaction={item} />}
-        ListEmptyComponent={
-          <Text style={{ color: "#aaa" }}>No transactions yet.</Text>
-        }
-      />
-    </View>
+      <GlassCard style={styles.centerCard}>
+        <Text style={styles.muted}>No transactions yet.</Text>
+      </GlassCard>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#0b1020" },
-  title: { fontSize: 22, fontWeight: "bold", color: "#fff", marginBottom: 12 },
+  title: {
+    fontSize: 26,
+    fontWeight: "700",
+    color: colors.textPrimary,
+    marginBottom: spacing.lg,
+  },
   balanceCard: {
-    backgroundColor: "#151b32",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
+    marginBottom: spacing.xl,
   },
-  balanceLabel: { color: "#ccc", fontSize: 14 },
-  balanceValue: { color: "#4ade80", fontSize: 26, fontWeight: "bold" },
-  subText: { color: "#aaa", marginTop: 4 },
+  label: {
+    color: colors.textSecondary,
+    fontSize: 16,
+    marginBottom: 4,
+  },
+  balance: {
+    fontSize: 38,
+    fontWeight: "700",
+    color: colors.accentGreen,
+  },
+  sub: {
+    marginTop: 4,
+    color: colors.textSecondary,
+  },
   sectionTitle: {
-    color: "#fff",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "600",
-    marginBottom: 8,
+    color: colors.textPrimary,
+    marginBottom: spacing.sm,
+    marginTop: spacing.md,
   },
-  actions: {
+  centerCard: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  muted: { color: colors.textMuted },
+  row: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 16,
-    gap: 8,
+    marginBottom: spacing.xl,
   },
 });

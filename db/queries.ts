@@ -1,4 +1,5 @@
-import { getDb } from "./db";
+import { addCategory, Category, getCategories } from "./categories";
+import { addTransaction as addTx, getTransactions } from "./transactions";
 
 export type TransactionRow = {
   id: number;
@@ -11,13 +12,6 @@ export type TransactionRow = {
   category_name?: string;
 };
 
-export type SettingsRow = {
-  id: number;
-  currency: string | null;
-  daily_reminder: number | null;
-  budget_limit: number | null;
-};
-
 type NewTransactionInput = {
   type: "income" | "expense";
   amount: number;
@@ -27,76 +21,64 @@ type NewTransactionInput = {
 };
 
 //--------------------------------------
+// ENSURE CATEGORY
+//--------------------------------------
+async function ensureCategory(name: string): Promise<Category> {
+  const categories = await getCategories();
+  const existing = categories.find((c) => c.name === name);
+
+  if (existing) return existing;
+
+  await addCategory(name);
+  const updated = await getCategories();
+  return updated.find((c) => c.name === name)!;
+}
+
+//--------------------------------------
 // ADD TRANSACTION
 //--------------------------------------
-export function addTransaction(input: NewTransactionInput): Promise<void> {
-  return new Promise(async (resolve, reject) => {
-    const db = getDb();
-    const categoryId = await ensureCategory(input.categoryName);
+export async function addTransaction(
+  input: NewTransactionInput
+): Promise<void> {
+  const cat = await ensureCategory(input.categoryName);
 
-    db.transaction((tx) => {
-      tx.executeSql(
-        `INSERT INTO transactions (type, amount, category_id, description, date)
-         VALUES (?, ?, ?, ?, ?)`,
-        [
-          input.type,
-          input.amount,
-          categoryId,
-          input.description ?? null,
-          input.date,
-        ],
-        () => resolve(),
-        (_, err) => reject(err)
-      );
-    });
+  await addTx({
+    type: input.type,
+    amount: input.amount,
+    categoryId: cat.id,
+    description: input.description ?? "",
+    date: input.date,
   });
 }
 
 //--------------------------------------
-// GET ALL TRANSACTIONS
+// GET ALL TRANSACTIONS (JOIN categories)
 //--------------------------------------
-export function getAllTransactions(): Promise<TransactionRow[]> {
-  return new Promise((resolve, reject) => {
-    const db = getDb();
+export async function getAllTransactions(): Promise<TransactionRow[]> {
+  const txs = await getTransactions();
+  const categories = await getCategories();
 
-    db.transaction((tx) => {
-      tx.executeSql(
-        `SELECT t.*, c.name AS category_name
-         FROM transactions t
-         LEFT JOIN categories c ON t.category_id = c.id
-         ORDER BY date DESC`,
-        [],
-        (_, result) => resolve(result.rows._array as TransactionRow[]),
-        (_, err) => reject(err)
-      );
-    });
-  });
+  return txs
+    .map((t) => {
+      const cat = categories.find((c) => c.id === t.categoryId);
+      return {
+        id: t.id,
+        type: t.type,
+        amount: t.amount,
+        category_id: t.categoryId,
+        description: t.description,
+        date: t.date,
+        receipt_id: t.receiptId ?? null,
+        category_name: cat?.name || null,
+      } as TransactionRow;
+    })
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
-function ensureCategory(name: string): Promise<number> {
-  return new Promise((resolve, reject) => {
-    const db = getDb();
-
-    db.transaction((tx) => {
-      // Check for existing
-      tx.executeSql(
-        `SELECT id FROM categories WHERE name = ? LIMIT 1`,
-        [name],
-        (_, result) => {
-          if (result.rows.length > 0) {
-            resolve(result.rows.item(0).id);
-          } else {
-            // Insert new category
-            tx.executeSql(
-              `INSERT INTO categories (name) VALUES (?)`,
-              [name],
-              (_, res) => resolve(res.insertId!),
-              (_, err) => reject(err)
-            );
-          }
-        },
-        (_, err) => reject(err)
-      );
-    });
-  });
+//--------------------------------------
+// GET RECENT TRANSACTIONS
+//--------------------------------------
+export async function getRecentTransactions(limit: number = 5) {
+  const all = await getAllTransactions();
+  return all.slice(0, limit);
 }
