@@ -1,3 +1,4 @@
+import { addTransaction } from "@/db/transactions";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -12,7 +13,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { addTransaction } from "../../db/queries";
 
 export default function AddIncomeScreen() {
   const [amount, setAmount] = useState("");
@@ -27,16 +27,21 @@ export default function AddIncomeScreen() {
       return;
     }
 
-    await addTransaction({
-      type: "income",
-      amount: value,
-      categoryName: source,
-      description: "Income",
-      date: new Date().toISOString(),
-    });
+    try {
+      await addTransaction({
+        type: "income",
+        amount: value,
+        categoryId: 99,
+        description: source || "Income",
+        date: new Date().toISOString(),
+      });
 
-    Alert.alert("Income saved");
-    router.push("/");
+      Alert.alert("Income saved!");
+      router.push("/");
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Error saving income");
+    }
   };
 
   return (

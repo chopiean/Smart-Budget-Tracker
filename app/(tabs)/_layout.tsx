@@ -1,27 +1,35 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
-export default function TabsLayout() {
+export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
+        tabBarShowLabel: false,
+
         tabBarStyle: {
-          backgroundColor: "#0b1020",
-          borderTopColor: "#1a2238",
-          paddingBottom: 6,
-          height: 60,
+          backgroundColor: "#0A0F1F",
+          borderTopWidth: 0,
+          height: 100,
+          paddingBottom: 20,
+          paddingTop: 10,
+          position: "absolute",
         },
-        tabBarActiveTintColor: "#4ade80",
-        tabBarInactiveTintColor: "#94a3b8",
+
+        tabBarItemStyle: {
+          paddingHorizontal: 3,
+        },
+
+        tabBarActiveTintColor: "#00e676",
+        tabBarInactiveTintColor: "#6c748a",
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Dashboard",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="grid-outline" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="grid" size={26} color={color} />
           ),
         }}
       />
@@ -29,9 +37,8 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="add-expense"
         options={{
-          title: "Expense",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="remove-circle-outline" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="remove-circle" size={28} color={color} />
           ),
         }}
       />
@@ -39,9 +46,8 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="add-income"
         options={{
-          title: "Income",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add-circle-outline" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="add-circle" size={32} color={color} />
           ),
         }}
       />
@@ -49,9 +55,8 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="scan-receipt"
         options={{
-          title: "Scan",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="camera-outline" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="camera" size={25} color={color} />
           ),
         }}
       />
@@ -59,9 +64,8 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="transactions"
         options={{
-          title: "History",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="list-outline" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="list" size={24} color={color} />
           ),
         }}
       />
@@ -69,9 +73,8 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="reports"
         options={{
-          title: "Reports",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="stats-chart-outline" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="stats-chart" size={24} color={color} />
           ),
         }}
       />
@@ -79,9 +82,17 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: "Settings",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings-outline" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="settings" size={24} color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="categories"
+        options={{
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="folder-open" size={24} color={color} />
           ),
         }}
       />
