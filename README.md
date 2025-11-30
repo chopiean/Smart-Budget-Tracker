@@ -1,9 +1,9 @@
 **🛠️ Technologies Used**
-**React Native: **
+**React Native**
 
 - The core framework used to build the mobile application. React Native enables cross-platform development for both Android and iOS using JavaScript and TypeScript.
 
-**Expo: **
+**Expo**
 Used as the main development environment and toolchain, providing
 - Fast development workflow with Expo Go
 - Access to native APIs without writing native code
