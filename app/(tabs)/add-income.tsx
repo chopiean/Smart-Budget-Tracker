@@ -35,6 +35,8 @@ export default function AddIncomeScreen() {
         description: source || "",
         date: new Date().toISOString(),
       });
+      setAmount("");
+      setSource("");
 
       Alert.alert("Income saved!");
       router.push("/(tabs)/dashboard");

@@ -3,19 +3,20 @@ import GlassCard from "@/components/GlassCard";
 import Screen from "@/components/Screen";
 import { colors, spacing } from "@/constants/theme";
 import { getAllTransactions, type TransactionRow } from "@/db/queries";
-import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-
 export default function DashboardScreen() {
   const router = useRouter();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
 
-  useEffect(() => {
-    load();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [])
+  );
 
   async function load() {
     const data = await getAllTransactions();

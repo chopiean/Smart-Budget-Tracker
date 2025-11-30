@@ -35,6 +35,9 @@ export default function AddExpenseScreen() {
         description: description || "",
         date: new Date().toISOString(),
       });
+      setAmount("");
+      setCategory("");
+      setDescription("");
 
       Alert.alert("Success", "Expense saved!");
       nav.goBack();
@@ -43,7 +46,6 @@ export default function AddExpenseScreen() {
       Alert.alert("Error saving expense");
     }
   }
-
   return (
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView

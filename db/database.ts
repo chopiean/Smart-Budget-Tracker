@@ -1,10 +1,8 @@
-import { openDatabaseAsync, SQLiteDatabase } from "expo-sqlite";
+import * as SQLite from "expo-sqlite";
 
-export let db: SQLiteDatabase;
+export const db = SQLite.openDatabaseSync("budget.db");
 
 export async function initDB() {
-  db = await openDatabaseAsync("budget.db");
-
   await db.execAsync(`
     PRAGMA foreign_keys = ON;
 

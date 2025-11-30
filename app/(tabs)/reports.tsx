@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import { ChartBar } from "../../components/ChartBar";
 import { ChartPie } from "../../components/ChartPie";
@@ -6,25 +7,35 @@ import { getMonthlyReports } from "../../db/reports";
 import { useBudget } from "../../hooks/useBudget";
 
 export default function ReportsScreen() {
+  // from useBudget: auto-updates categories + built-in monthly data
   const { byCategory } = useBudget();
 
   const [monthlyTrend, setMonthlyTrend] = useState<
     { category: string; total: number }[]
   >([]);
 
+  async function loadReports() {
+    const reports = await getMonthlyReports();
+
+    const trend = reports.map((r) => ({
+      category: r.month,
+      total: r.totalExpense,
+    }));
+
+    setMonthlyTrend(trend);
+  }
+
+  // Load once on mount
   useEffect(() => {
-    async function loadReports() {
-      const reports = await getMonthlyReports();
-
-      const trend = reports.map((r) => ({
-        category: r.month,
-        total: r.totalExpense,
-      }));
-
-      setMonthlyTrend(trend);
-    }
     loadReports();
   }, []);
+
+  // Refresh whenever screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      loadReports();
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.safe}>

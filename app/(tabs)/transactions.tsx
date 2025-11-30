@@ -1,9 +1,17 @@
+import { useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 import { FlatList, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { ExpenseCard } from "../../components/ExpenseCard";
 import { useTransactions } from "../../hooks/useTransactions";
 
 export default function TransactionsScreen() {
-  const { transactions } = useTransactions();
+  const { transactions, refresh } = useTransactions();
+
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh])
+  );
 
   return (
     <SafeAreaView style={styles.safe}>
