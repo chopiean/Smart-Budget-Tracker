@@ -1,10 +1,11 @@
-// db/database.ts
-import { openDatabaseSync, SQLiteDatabase } from "expo-sqlite";
+import { openDatabaseAsync, SQLiteDatabase } from "expo-sqlite";
 
-export const db: SQLiteDatabase = openDatabaseSync("budget.db");
+export let db: SQLiteDatabase;
 
-export function initDB() {
-  db.execAsync(`
+export async function initDB() {
+  db = await openDatabaseAsync("budget.db");
+
+  await db.execAsync(`
     PRAGMA foreign_keys = ON;
 
     CREATE TABLE IF NOT EXISTS categories (
@@ -21,5 +22,14 @@ export function initDB() {
       date TEXT NOT NULL,
       FOREIGN KEY(category_id) REFERENCES categories(id)
     );
+
+    CREATE TABLE IF NOT EXISTS settings (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      currency TEXT DEFAULT '€',
+      daily_reminder INTEGER DEFAULT 0,
+      budget_limit REAL DEFAULT 0
+    );
+
+    INSERT OR IGNORE INTO settings (id) VALUES (1);
   `);
 }

@@ -1,3 +1,4 @@
+import { initDB } from "@/db/database";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
@@ -7,7 +8,10 @@ export default function RootLayout() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    setReady(true);
+    (async () => {
+      await initDB();
+      setReady(true);
+    })();
   }, []);
 
   if (!ready) {

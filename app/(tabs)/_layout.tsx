@@ -7,7 +7,6 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
-
         tabBarStyle: {
           backgroundColor: "#0A0F1F",
           borderTopWidth: 0,
@@ -16,15 +15,12 @@ export default function TabLayout() {
           paddingTop: 10,
           position: "absolute",
         },
-
-        tabBarItemStyle: {
-          paddingHorizontal: 3,
-        },
-
+        tabBarItemStyle: { paddingHorizontal: 3 },
         tabBarActiveTintColor: "#00e676",
         tabBarInactiveTintColor: "#6c748a",
       }}
     >
+      {/* Home → redirects to dashboard */}
       <Tabs.Screen
         name="index"
         options={{
