@@ -68,5 +68,6 @@ Used to visualize:
 - Adds clarity and insight into the user’s financial data.
 
 **Gesture Handler**
+
 Enhanced user experience with smoother interactions using
 react-native-gesture-handler.
