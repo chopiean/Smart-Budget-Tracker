@@ -8,10 +8,17 @@ export default function RootLayout() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      await initDB();
-      setReady(true);
-    })();
+    const load = async () => {
+      try {
+        await initDB();
+      } catch (e) {
+        console.error("DB INIT ERROR:", e);
+      } finally {
+        setReady(true);
+      }
+    };
+
+    load();
   }, []);
 
   if (!ready) {
