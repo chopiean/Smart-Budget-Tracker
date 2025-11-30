@@ -1,4 +1,4 @@
-import { addTransaction } from "@/db/transactions";
+import { addTransactionWithCategoryName } from "@/db/queries";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -28,10 +28,10 @@ export default function AddIncomeScreen() {
     }
 
     try {
-      await addTransaction({
+      await addTransactionWithCategoryName({
         type: "income",
         amount: value,
-        category: "Income",
+        categoryName: "Income", // ALWAYS use Income category
         description: source || "",
         date: new Date().toISOString(),
       });
@@ -84,13 +84,8 @@ export default function AddIncomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: "#0b1020",
-  },
-  container: {
-    padding: 20,
-  },
+  safe: { flex: 1, backgroundColor: "#0b1020" },
+  container: { padding: 20 },
   title: {
     fontSize: 28,
     fontWeight: "700",
@@ -104,11 +99,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 40,
   },
-  label: {
-    color: "#9da7c2",
-    marginBottom: 6,
-    fontSize: 15,
-  },
+  label: { color: "#9da7c2", marginBottom: 6, fontSize: 15 },
   input: {
     backgroundColor: "#1f253b",
     color: "#fff",
@@ -123,9 +114,5 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
   },
-  buttonText: {
-    color: "#000",
-    fontSize: 16,
-    fontWeight: "700",
-  },
+  buttonText: { color: "#000", fontSize: 16, fontWeight: "700" },
 });

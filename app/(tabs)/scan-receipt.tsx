@@ -1,3 +1,5 @@
+import { addTransactionWithCategoryName } from "@/db/queries";
+import { useOCR } from "@/hooks/useOCR";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -11,16 +13,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { addTransaction } from "../../db/queries";
-import { useOCR } from "../../hooks/useOCR";
 
 export default function ScanReceiptScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView | null>(null);
   const [capturing, setCapturing] = useState(false);
   const { extractFromImage } = useOCR();
+
   const [detectedTotal, setDetectedTotal] = useState<number | null>(null);
-  const [category, setCategory] = useState<string>("Grocery");
+  const [category, setCategory] = useState<string>("Grocery"); // default
   const router = useRouter();
 
   useEffect(() => {
@@ -31,14 +32,16 @@ export default function ScanReceiptScreen() {
 
   const handleCapture = async () => {
     if (!cameraRef.current) return;
+
     setCapturing(true);
 
     try {
       const photo = await cameraRef.current.takePictureAsync({ base64: true });
       const result = await extractFromImage(photo);
-      setDetectedTotal(result.total);
-      setCategory(result.category);
-    } catch (e) {
+
+      setDetectedTotal(result.total ?? null);
+      setCategory(result.category ?? "Other");
+    } catch {
       Alert.alert("Error", "Failed to process receipt");
     } finally {
       setCapturing(false);
@@ -51,16 +54,21 @@ export default function ScanReceiptScreen() {
       return;
     }
 
-    await addTransaction({
-      type: "expense",
-      amount: detectedTotal,
-      categoryName: category,
-      description: "Receipt",
-      date: new Date().toISOString(),
-    });
+    try {
+      await addTransactionWithCategoryName({
+        type: "expense",
+        amount: detectedTotal,
+        categoryName: category,
+        description: "Receipt",
+        date: new Date().toISOString(),
+      });
 
-    Alert.alert("Saved from receipt");
-    router.push("/(tabs)/dashboard");
+      Alert.alert("Saved from receipt!");
+      router.push("/(tabs)/dashboard");
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Failed to save");
+    }
   };
 
   if (!permission?.granted) {
@@ -99,7 +107,7 @@ export default function ScanReceiptScreen() {
           </TouchableOpacity>
         )}
 
-        {/* Results Card */}
+        {/* Detected Amount */}
         <View style={styles.resultCard}>
           <Text style={styles.resultLabel}>Detected Total</Text>
           <Text style={styles.resultValue}>
@@ -123,15 +131,8 @@ export default function ScanReceiptScreen() {
 /* -------------------- STYLES ------------------------ */
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: "#0b1020",
-  },
-
-  container: {
-    padding: 20,
-  },
-
+  safe: { flex: 1, backgroundColor: "#0b1020" },
+  container: { padding: 20 },
   title: {
     fontSize: 28,
     fontWeight: "700",
@@ -148,7 +149,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#1f253b",
   },
-
   camera: { flex: 1 },
 
   captureBtn: {
@@ -158,7 +158,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-
   captureBtnText: {
     color: "#00e676",
     fontSize: 16,
@@ -171,12 +170,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 24,
   },
-
-  resultLabel: {
-    color: "#9da7c2",
-    fontSize: 14,
-  },
-
+  resultLabel: { color: "#9da7c2", fontSize: 14 },
   resultValue: {
     color: "#00e676",
     fontSize: 20,
@@ -190,7 +184,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
   },
-
   saveButtonText: {
     color: "#000",
     fontSize: 17,
@@ -203,11 +196,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 10,
   },
-
-  buttonText: {
-    color: "#000",
-    fontWeight: "700",
-  },
+  buttonText: { color: "#000", fontWeight: "700" },
 
   center: {
     flex: 1,

@@ -1,4 +1,4 @@
-import { addTransaction } from "@/db/transactions";
+import { addTransactionWithCategoryName } from "@/db/queries";
 import { useNavigation } from "expo-router";
 import { useState } from "react";
 import {
@@ -28,10 +28,10 @@ export default function AddExpenseScreen() {
     if (isNaN(value)) return Alert.alert("Invalid amount");
 
     try {
-      await addTransaction({
+      await addTransactionWithCategoryName({
         type: "expense",
         amount: value,
-        category: category,
+        categoryName: category.trim(),
         description: description || "",
         date: new Date().toISOString(),
       });
@@ -94,13 +94,8 @@ export default function AddExpenseScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: "#0b1020",
-  },
-  container: {
-    padding: 20,
-  },
+  safe: { flex: 1, backgroundColor: "#0b1020" },
+  container: { padding: 20 },
   title: {
     fontSize: 28,
     fontWeight: "700",
@@ -114,11 +109,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 40,
   },
-  label: {
-    color: "#9da7c2",
-    marginBottom: 6,
-    fontSize: 15,
-  },
+  label: { color: "#9da7c2", marginBottom: 6, fontSize: 15 },
   input: {
     backgroundColor: "#1f253b",
     borderRadius: 10,
@@ -133,9 +124,5 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
   },
-  buttonText: {
-    color: "#000",
-    fontSize: 16,
-    fontWeight: "700",
-  },
+  buttonText: { color: "#000", fontSize: 16, fontWeight: "700" },
 });

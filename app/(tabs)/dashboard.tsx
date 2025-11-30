@@ -2,14 +2,14 @@ import GlassButton from "@/components/GlassButton";
 import GlassCard from "@/components/GlassCard";
 import Screen from "@/components/Screen";
 import { colors, spacing } from "@/constants/theme";
-import { getTransactions, type Transaction } from "@/db/transactions";
+import { getAllTransactions, type TransactionRow } from "@/db/queries";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function DashboardScreen() {
   const router = useRouter();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
 
@@ -18,7 +18,7 @@ export default function DashboardScreen() {
   }, []);
 
   async function load() {
-    const data = await getTransactions();
+    const data = await getAllTransactions();
     setTransactions(data);
 
     let income = 0;
@@ -37,10 +37,8 @@ export default function DashboardScreen() {
 
   return (
     <Screen>
-      {/* Title */}
       <Text style={styles.title}>Smart Budget Tracker</Text>
 
-      {/* Balance */}
       <GlassCard style={styles.balanceCard}>
         <Text style={styles.label}>Total Balance</Text>
         <Text style={styles.balance}>€{totalBalance.toFixed(2)}</Text>
@@ -50,7 +48,6 @@ export default function DashboardScreen() {
         </Text>
       </GlassCard>
 
-      {/* This Month Spending */}
       <Text style={styles.sectionTitle}>This Month Spending</Text>
       <GlassCard style={styles.centerCard}>
         <Text style={styles.muted}>
@@ -58,7 +55,6 @@ export default function DashboardScreen() {
         </Text>
       </GlassCard>
 
-      {/* Buttons */}
       <View style={styles.row}>
         <GlassButton
           label="Add Expense"
@@ -74,7 +70,6 @@ export default function DashboardScreen() {
         />
       </View>
 
-      {/* Recent Transactions */}
       <Text style={styles.sectionTitle}>Recent Transactions</Text>
 
       <GlassCard style={styles.centerCard}>
@@ -82,15 +77,12 @@ export default function DashboardScreen() {
           <Text style={styles.muted}>No transactions yet.</Text>
         ) : (
           <View>
-            {transactions
-              .slice(-3)
-              .reverse()
-              .map((t) => (
-                <Text key={t.id} style={styles.muted}>
-                  {t.type === "income" ? "➕" : "➖"} {t.description} – €
-                  {t.amount.toFixed(2)}
-                </Text>
-              ))}
+            {transactions.slice(0, 3).map((t) => (
+              <Text key={t.id} style={styles.muted}>
+                {t.type === "income" ? "➕" : "➖"} {t.description} – €
+                {t.amount.toFixed(2)}
+              </Text>
+            ))}
           </View>
         )}
       </GlassCard>
@@ -105,23 +97,10 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     marginBottom: spacing.lg,
   },
-  balanceCard: {
-    marginBottom: spacing.xl,
-  },
-  label: {
-    color: colors.textSecondary,
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  balance: {
-    fontSize: 38,
-    fontWeight: "700",
-    color: colors.accentGreen,
-  },
-  sub: {
-    marginTop: 4,
-    color: colors.textSecondary,
-  },
+  balanceCard: { marginBottom: spacing.xl },
+  label: { color: colors.textSecondary, fontSize: 16, marginBottom: 4 },
+  balance: { fontSize: 38, fontWeight: "700", color: colors.accentGreen },
+  sub: { marginTop: 4, color: colors.textSecondary },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "600",
@@ -136,8 +115,5 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   muted: { color: colors.textMuted, fontSize: 14 },
-  row: {
-    flexDirection: "row",
-    marginBottom: spacing.xl,
-  },
+  row: { flexDirection: "row", marginBottom: spacing.xl },
 });

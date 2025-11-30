@@ -1,6 +1,6 @@
+import { getCategories } from "@/db/queries";
 import { useEffect, useState } from "react";
 import { FlatList, SafeAreaView, StyleSheet, Text, View } from "react-native";
-import { getCategories } from "../../db/categories";
 
 export default function CategoriesScreen() {
   const [categories, setCategories] = useState<{ id: number; name: string }[]>(

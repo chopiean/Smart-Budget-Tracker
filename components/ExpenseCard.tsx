@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import { TransactionRow } from "../db/queries";
+import type { TransactionRow } from "../db/queries";
 import { formatDate } from "../utils/date";
 
 export function ExpenseCard({ transaction }: { transaction: TransactionRow }) {
@@ -12,9 +12,14 @@ export function ExpenseCard({ transaction }: { transaction: TransactionRow }) {
         <Text style={styles.title}>
           {transaction.category_name || "Uncategorized"}
         </Text>
-        <Text style={styles.desc}>{transaction.description || ""}</Text>
+
+        {transaction.description ? (
+          <Text style={styles.desc}>{transaction.description}</Text>
+        ) : null}
+
         <Text style={styles.date}>{formatDate(transaction.date)}</Text>
       </View>
+
       <Text style={[styles.amount, { color }]}>
         {isIncome ? "+" : "-"}€{transaction.amount.toFixed(2)}
       </Text>
@@ -30,9 +35,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
   },
-  title: { color: "#fff", fontWeight: "600" },
-  desc: { color: "#aaa", fontSize: 12 },
+  title: { color: "#fff", fontWeight: "600", fontSize: 15 },
+  desc: { color: "#aaa", fontSize: 12, marginTop: 2 },
   date: { color: "#777", fontSize: 11, marginTop: 4 },
   amount: { fontSize: 16, fontWeight: "bold" },
 });

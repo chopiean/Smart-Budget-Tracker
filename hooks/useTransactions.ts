@@ -1,3 +1,4 @@
+// hooks/useTransactions.ts
 import { useEffect, useState } from "react";
 import {
   getAllTransactions,

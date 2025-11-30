@@ -1,14 +1,15 @@
-import { getTransactions, Transaction } from "./transactions";
+// db/reports.ts
+import { getAllTransactions, TransactionRow } from "./queries";
 
 export type MonthlyReport = {
-  month: string; // e.g. "2025-02"
+  month: string;
   totalIncome: number;
   totalExpense: number;
   netBalance: number;
   byCategory: {
-    [categoryId: number]: number; // amount spent in that category
+    [category: string]: number;
   };
-  transactions: Transaction[];
+  transactions: TransactionRow[];
 };
 
 // Format to YYYY-MM
@@ -20,7 +21,7 @@ function formatMonth(date: string): string {
 }
 
 export async function getMonthlyReports(): Promise<MonthlyReport[]> {
-  const all = await getTransactions();
+  const all = await getAllTransactions();
 
   const monthlyMap: Record<string, MonthlyReport> = {};
 
@@ -40,29 +41,23 @@ export async function getMonthlyReports(): Promise<MonthlyReport[]> {
 
     const report = monthlyMap[monthKey];
 
-    // Add transaction to list
     report.transactions.push(tx);
 
-    // Income vs Expense
     if (tx.type === "income") {
       report.totalIncome += tx.amount;
     } else {
       report.totalExpense += tx.amount;
 
-      // Category breakdown
-      if (!report.byCategory[tx.categoryId]) {
-        report.byCategory[tx.categoryId] = 0;
-      }
-      report.byCategory[tx.categoryId] += tx.amount;
+      const catName = tx.category_name || "Other";
+      report.byCategory[catName] =
+        (report.byCategory[catName] || 0) + tx.amount;
     }
   }
 
-  // Calculate net balances
   for (const key of Object.keys(monthlyMap)) {
     const r = monthlyMap[key];
     r.netBalance = r.totalIncome - r.totalExpense;
   }
 
-  // Sort months newest → oldest
   return Object.values(monthlyMap).sort((a, b) => (a.month < b.month ? 1 : -1));
 }

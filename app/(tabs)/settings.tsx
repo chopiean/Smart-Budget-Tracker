@@ -1,3 +1,4 @@
+import { getSettings, saveSettings } from "@/db/settings";
 import { useEffect, useState } from "react";
 import {
   Alert,
@@ -10,7 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { getSettings, saveSettings } from "../../db/settings";
 
 export default function SettingsScreen() {
   const [currency, setCurrency] = useState("€");
@@ -23,18 +23,20 @@ export default function SettingsScreen() {
       if (s) {
         setCurrency(s.currency || "€");
         setDailyReminder(Boolean(s.daily_reminder));
-        setBudgetLimit(s.budget_limit ? String(s.budget_limit) : "0");
+        setBudgetLimit(String(s.budget_limit ?? 0));
       }
     })();
   }, []);
 
   const handleSave = async () => {
     const limit = parseFloat(budgetLimit) || 0;
+
     await saveSettings({
       currency,
       daily_reminder: dailyReminder,
       budget_limit: limit,
     });
+
     Alert.alert("Settings saved");
   };
 
