@@ -60,7 +60,7 @@ export default function ScanReceiptScreen() {
     });
 
     Alert.alert("Saved from receipt");
-    router.push("/");
+    router.push("/(tabs)/dashboard");
   };
 
   if (!permission?.granted) {

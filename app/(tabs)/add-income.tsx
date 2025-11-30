@@ -31,13 +31,13 @@ export default function AddIncomeScreen() {
       await addTransaction({
         type: "income",
         amount: value,
-        categoryId: 99,
-        description: source || "Income",
+        category: "Income",
+        description: source || "",
         date: new Date().toISOString(),
       });
 
       Alert.alert("Income saved!");
-      router.push("/");
+      router.push("/(tabs)/dashboard");
     } catch (err) {
       console.error(err);
       Alert.alert("Error saving income");

@@ -31,7 +31,7 @@ export default function AddExpenseScreen() {
       await addTransaction({
         type: "expense",
         amount: value,
-        categoryId: 1, // later: dynamic category
+        category: category,
         description: description || "",
         date: new Date().toISOString(),
       });
