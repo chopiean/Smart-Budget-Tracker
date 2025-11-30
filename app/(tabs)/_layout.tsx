@@ -20,9 +20,9 @@ export default function TabLayout() {
         tabBarInactiveTintColor: "#6c748a",
       }}
     >
-      {/* Home → redirects to dashboard */}
+      {/* 🏠 DASHBOARD (first tab) */}
       <Tabs.Screen
-        name="index"
+        name="dashboard" // matches app/(tabs)/dashboard.tsx
         options={{
           tabBarIcon: ({ color }) => (
             <Ionicons name="grid" size={26} color={color} />

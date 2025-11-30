@@ -1,51 +1,104 @@
-# Welcome to your Expo app 👋
+🛠️ Technologies Used
+React Native
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+The core framework used to build the mobile application. React Native enables cross-platform development for both Android and iOS using JavaScript and TypeScript.
 
-## Get started
+Expo
 
-1. Install dependencies
+Used as the main development environment and toolchain, providing:
 
-   ```bash
-   npm install
-   ```
+Fast development workflow with Expo Go
 
-2. Start the app
+Access to native APIs without writing native code
 
-   ```bash
-   npx expo start
-   ```
+Over-the-air updates
 
-In the output, you'll find options to open the app in a
+Easy testing across devices
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Expo Router
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+A file-based navigation system that organizes screens automatically.
+It supports:
 
-## Get a fresh project
+Nested routes
 
-When you're ready, run:
+Stack navigation
 
-```bash
-npm run reset-project
-```
+Tab navigation
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Clean folder-based structure with minimal configuration
 
-## Learn more
+TypeScript
 
-To learn more about developing your project with Expo, look at the following resources:
+Added static typing to improve:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Code quality
 
-## Join the community
+IntelliSense support
 
-Join our community of developers creating universal apps.
+Error detection
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-# Smart-Budget-Tracker
+Maintainability
+
+SQLite (expo-sqlite)
+
+A local database used for storing:
+
+Expenses
+
+Income
+
+Categories
+
+Monthly summaries
+
+SQLite ensures offline-first performance, fast reads, and persistent local storage.
+
+Custom Hooks
+
+Implemented reusable hooks such as:
+
+useTransactions
+
+useBudget
+
+These manage data loading, refreshing, and screen updates in a clean and modular way.
+
+React Native Components & Styling
+
+UI built using:
+
+StyleSheet API
+
+Custom reusable components (GlassCard, GlassButton, ExpenseCard)
+
+A consistent dark theme with neon green accents
+
+Modern and minimalistic layout
+
+Expo Vector Icons
+
+Provides the icons used in:
+
+Bottom tab bar
+
+Action buttons
+
+UI elements
+
+Ensures a clean, polished, and consistent visual style.
+
+Charts (Pie & Bar Charts)
+
+Used to visualize:
+
+Spending by category
+
+Monthly expense trends
+
+Adds clarity and insight into the user’s financial data.
+
+Gesture Handler
+
+Enhanced user experience with smoother interactions using
+react-native-gesture-handler.
