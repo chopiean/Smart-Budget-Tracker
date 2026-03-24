@@ -3,25 +3,60 @@ import { useCallback, useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import { ChartBar } from "../../components/ChartBar";
 import { ChartPie } from "../../components/ChartPie";
-import { getMonthlyReports } from "../../db/reports";
-import { useBudget } from "../../hooks/useBudget";
+import {
+  getIncomeExpenseSummary,
+  getMonthlyReports,
+  getOverallCategoryTotals,
+} from "../../db/reports";
+
+type BarItem = {
+  category: string;
+  total: number;
+};
+
+type PieItem = {
+  name: string;
+  value: number;
+};
 
 export default function ReportsScreen() {
-  const { byCategory } = useBudget();
-
-  const [monthlyTrend, setMonthlyTrend] = useState<
-    { category: string; total: number }[]
-  >([]);
+  const [categoryTotals, setCategoryTotals] = useState<PieItem[]>([]);
+  const [monthlyExpenseTrend, setMonthlyExpenseTrend] = useState<BarItem[]>([]);
+  const [monthlyIncomeTrend, setMonthlyIncomeTrend] = useState<BarItem[]>([]);
+  const [summary, setSummary] = useState({
+    totalIncome: 0,
+    totalExpense: 0,
+    netBalance: 0,
+  });
 
   async function loadReports() {
-    const reports = await getMonthlyReports();
+    try {
+      const reports = await getMonthlyReports();
+      const totals = await getIncomeExpenseSummary();
+      const categories = await getOverallCategoryTotals();
 
-    const trend = reports.map((r) => ({
-      category: r.month,
-      total: r.totalExpense,
-    }));
+      const expenseTrend = reports.map((r) => ({
+        category: r.month,
+        total: r.totalExpense,
+      }));
 
-    setMonthlyTrend(trend);
+      const incomeTrend = reports.map((r) => ({
+        category: r.month,
+        total: r.totalIncome,
+      }));
+
+      const pieData = categories.map((item) => ({
+        name: item.category,
+        value: item.total,
+      }));
+
+      setMonthlyExpenseTrend(expenseTrend);
+      setMonthlyIncomeTrend(incomeTrend);
+      setCategoryTotals(pieData);
+      setSummary(totals);
+    } catch (error) {
+      console.error("Failed to load reports:", error);
+    }
   }
 
   useEffect(() => {
@@ -39,16 +74,35 @@ export default function ReportsScreen() {
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Reports</Text>
 
-        {/* CATEGORY PIE */}
-        <View style={styles.card}>
-          <Text style={styles.section}>Totals by Category</Text>
-          <ChartPie data={byCategory} />
+        <View style={styles.summaryRow}>
+          <View style={styles.summaryCard}>
+            <Text style={styles.summaryLabel}>Income</Text>
+            <Text style={styles.incomeText}>
+              € {summary.totalIncome.toFixed(2)}
+            </Text>
+          </View>
+
+          <View style={styles.summaryCard}>
+            <Text style={styles.summaryLabel}>Expense</Text>
+            <Text style={styles.expenseText}>
+              € {summary.totalExpense.toFixed(2)}
+            </Text>
+          </View>
         </View>
 
-        {/* MONTHLY BAR */}
+        <View style={styles.card}>
+          <Text style={styles.section}>Totals by Category</Text>
+          <ChartPie data={categoryTotals} />
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.section}>Monthly Income Trend</Text>
+          <ChartBar data={monthlyIncomeTrend} />
+        </View>
+
         <View style={styles.card}>
           <Text style={styles.section}>Monthly Expense Trend</Text>
-          <ChartBar data={monthlyTrend} />
+          <ChartBar data={monthlyExpenseTrend} />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -70,6 +124,43 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 24,
     textAlign: "center",
+  },
+  summaryRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 12,
+  },
+  summaryCard: {
+    flex: 1,
+    backgroundColor: "#161b2e",
+    padding: 16,
+    borderRadius: 18,
+  },
+  netCard: {
+    backgroundColor: "#161b2e",
+    padding: 16,
+    borderRadius: 18,
+    marginBottom: 24,
+  },
+  summaryLabel: {
+    color: "#9da7c2",
+    fontSize: 14,
+    marginBottom: 8,
+  },
+  incomeText: {
+    color: "#00e676",
+    fontSize: 22,
+    fontWeight: "700",
+  },
+  expenseText: {
+    color: "#ff6b6b",
+    fontSize: 22,
+    fontWeight: "700",
+  },
+  balanceText: {
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: "700",
   },
   section: {
     color: "#fff",

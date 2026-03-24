@@ -115,3 +115,13 @@ export async function getCategoryTotals(): Promise<
      ORDER BY total DESC;`
   );
 }
+export async function getTotalExpense(): Promise<number> {
+  const db = await initDB();
+
+  const row = await db.getFirstAsync<{ total: number }>(
+    `SELECT COALESCE(SUM(amount), 0) AS total
+     FROM transactions
+     WHERE type = 'expense';`
+  );
+  return row?.total ?? 0;
+}

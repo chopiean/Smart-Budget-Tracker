@@ -27,7 +27,7 @@ export function ChartBar({ data }: Props) {
         height={260}
         showValuesOnTopOfBars={true}
         yAxisLabel="€"
-        yAxisSuffix="" // <-- REQUIRED (FIX)
+        yAxisSuffix=""
         chartConfig={{
           backgroundColor: "#0b1020",
           backgroundGradientFrom: "#0b1020",
