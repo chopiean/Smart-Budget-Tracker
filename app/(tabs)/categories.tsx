@@ -1,4 +1,4 @@
-import { getCategories } from "@/db/queries";
+import { getCategoryTotals } from "@/db/queries";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import {
@@ -10,14 +10,16 @@ import {
   View,
 } from "react-native";
 
+type CategoryTotal = {
+  category: string;
+  total: number;
+};
 export default function CategoriesScreen() {
-  const [categories, setCategories] = useState<{ id: number; name: string }[]>(
-    []
-  );
+  const [categories, setCategories] = useState<CategoryTotal[]>([]);
 
   const load = async () => {
     try {
-      const data = await getCategories();
+      const data = await getCategoryTotals();
       setCategories(data);
     } catch (error) {
       console.error("Failed to load categories", error);
@@ -33,24 +35,23 @@ export default function CategoriesScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-        <Text style={styles.title}>Categories</Text>
+        <Text style={styles.title}>Category Spending</Text>
 
         <FlatList
           data={categories}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={{
-            paddingBottom: 40,
-          }}
+          keyExtractor={(item) => item.category}
+          contentContainerStyle={{ paddingBottom: 40 }}
           renderItem={({ item }) => (
             <View style={styles.card}>
-              <Text style={styles.name}>{item.name}</Text>
+              <Text style={styles.name}>{item.category}</Text>
+              <Text style={styles.amount}>€ {item.total.toFixed(2)}</Text>
             </View>
           )}
           ListEmptyComponent={
             <View style={styles.emptyBox}>
-              <Text style={styles.emptyText}>No categories yet</Text>
+              <Text style={styles.emptyText}>No category spending yet</Text>
               <Text style={styles.emptySub}>
-                They will appear when transactions are added.
+                Totals will appear when expense transactions are added.
               </Text>
             </View>
           }
@@ -101,5 +102,11 @@ const styles = StyleSheet.create({
   emptySub: {
     color: "#4ade8055",
     fontSize: 13,
+  },
+  amount: {
+    color: "#00e676",
+    fontSize: 15,
+    fontWeight: "500",
+    marginTop: 6,
   },
 });

@@ -30,13 +30,6 @@ export async function ensureCategory(name: string): Promise<number | null> {
   return row?.id ?? null;
 }
 
-export async function getCategories(): Promise<CategoryRow[]> {
-  const db = await initDB();
-  return await db.getAllAsync<CategoryRow>(
-    "SELECT id, name FROM categories ORDER BY name ASC;"
-  );
-}
-
 /* TRANSACTIONS */
 export async function addTransaction(data: {
   type: "income" | "expense";
@@ -102,6 +95,23 @@ export async function getSpendingByCategory(): Promise<
      JOIN categories c ON t.category_id = c.id
      WHERE t.type = 'expense'
      GROUP BY t.category_id
+     ORDER BY total DESC;`
+  );
+}
+
+export async function getCategoryTotals(): Promise<
+  { category: string; total: number }[]
+> {
+  const db = await initDB();
+
+  return await db.getAllAsync<{ category: string; total: number }>(
+    `SELECT 
+        c.name AS category,
+        COALESCE(SUM(t.amount), 0) AS total
+     FROM categories c
+     LEFT JOIN transactions t 
+       ON t.category_id = c.id AND t.type = 'expense'
+     GROUP BY c.id
      ORDER BY total DESC;`
   );
 }
