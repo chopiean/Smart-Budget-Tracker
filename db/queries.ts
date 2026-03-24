@@ -1,4 +1,4 @@
-import { getDB } from "./database";
+import { initDB } from "./database";
 
 /* TYPES */
 export type CategoryRow = { id: number; name: string };
@@ -14,7 +14,7 @@ export type TransactionRow = {
 
 /* CATEGORY HELPERS */
 export async function ensureCategory(name: string): Promise<number | null> {
-  const db = getDB();
+  const db = await initDB();
   const clean = name.trim();
   if (!clean) return null;
 
@@ -31,7 +31,7 @@ export async function ensureCategory(name: string): Promise<number | null> {
 }
 
 export async function getCategories(): Promise<CategoryRow[]> {
-  const db = getDB();
+  const db = await initDB();
   return await db.getAllAsync<CategoryRow>(
     "SELECT id, name FROM categories ORDER BY name ASC;"
   );
@@ -45,7 +45,7 @@ export async function addTransaction(data: {
   description: string;
   date: string;
 }): Promise<void> {
-  const db = getDB();
+  const db = await initDB();
   await db.runAsync(
     `INSERT INTO transactions (type, amount, category_id, description, date)
      VALUES (?, ?, ?, ?, ?);`,
@@ -72,7 +72,7 @@ export async function addTransactionWithCategoryName(data: {
 
 /* QUERIES */
 export async function getAllTransactions(): Promise<TransactionRow[]> {
-  const db = getDB();
+  const db = await initDB();
   return await db.getAllAsync<TransactionRow>(
     `SELECT t.*, c.name AS category_name
      FROM transactions t
@@ -82,7 +82,7 @@ export async function getAllTransactions(): Promise<TransactionRow[]> {
 }
 
 export async function getRecentTransactions(): Promise<TransactionRow[]> {
-  const db = getDB();
+  const db = await initDB();
   return await db.getAllAsync<TransactionRow>(
     `SELECT t.*, c.name AS category_name
      FROM transactions t
@@ -95,7 +95,7 @@ export async function getRecentTransactions(): Promise<TransactionRow[]> {
 export async function getSpendingByCategory(): Promise<
   { category: string; total: number }[]
 > {
-  const db = getDB();
+  const db = await initDB();
   return await db.getAllAsync<{ category: string; total: number }>(
     `SELECT c.name AS category, SUM(t.amount) AS total
      FROM transactions t
