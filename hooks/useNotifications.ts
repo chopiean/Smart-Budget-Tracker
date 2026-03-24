@@ -18,7 +18,6 @@ export function useNotifications() {
   }, []);
 
   const scheduleDailyReminder = async () => {
-    // clear old reminders
     await Notifications.cancelAllScheduledNotificationsAsync();
 
     await Notifications.scheduleNotificationAsync({
@@ -28,7 +27,7 @@ export function useNotifications() {
       },
       trigger: {
         type: "timeInterval",
-        seconds: 24 * 60 * 60, // 24 hours
+        seconds: 24 * 60 * 60,
         repeats: true,
       } as any,
     });

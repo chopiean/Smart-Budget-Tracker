@@ -1,33 +1,43 @@
-import * as SQLite from "expo-sqlite";
+import { openDatabaseAsync, type SQLiteDatabase } from "expo-sqlite";
 
-export const db = SQLite.openDatabaseSync("budget.db");
+let dbPromise: Promise<SQLiteDatabase> | null = null;
 
-export async function initDB() {
-  await db.execAsync(`
-    PRAGMA foreign_keys = ON;
+export function initDB(): Promise<SQLiteDatabase> {
+  if (!dbPromise) {
+    dbPromise = (async () => {
+      const db = await openDatabaseAsync("budget.db");
 
-    CREATE TABLE IF NOT EXISTS categories (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL UNIQUE
-    );
+      await db.execAsync(`
+        PRAGMA foreign_keys = ON;
 
-    CREATE TABLE IF NOT EXISTS transactions (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      type TEXT NOT NULL,
-      amount REAL NOT NULL,
-      category_id INTEGER,
-      description TEXT,
-      date TEXT NOT NULL,
-      FOREIGN KEY(category_id) REFERENCES categories(id)
-    );
+        CREATE TABLE IF NOT EXISTS categories (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL UNIQUE
+        );
 
-    CREATE TABLE IF NOT EXISTS settings (
-      id INTEGER PRIMARY KEY CHECK (id = 1),
-      currency TEXT DEFAULT '€',
-      daily_reminder INTEGER DEFAULT 0,
-      budget_limit REAL DEFAULT 0
-    );
+        CREATE TABLE IF NOT EXISTS transactions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          type TEXT NOT NULL,
+          amount REAL NOT NULL,
+          category_id INTEGER,
+          description TEXT,
+          date TEXT NOT NULL,
+          FOREIGN KEY(category_id) REFERENCES categories(id)
+        );
 
-    INSERT OR IGNORE INTO settings (id) VALUES (1);
-  `);
+        CREATE TABLE IF NOT EXISTS settings (
+          id INTEGER PRIMARY KEY CHECK (id = 1),
+          currency TEXT DEFAULT '€',
+          daily_reminder INTEGER DEFAULT 0,
+          budget_limit REAL DEFAULT 0
+        );
+
+        INSERT OR IGNORE INTO settings (id) VALUES (1);
+      `);
+
+      return db;
+    })();
+  }
+
+  return dbPromise;
 }

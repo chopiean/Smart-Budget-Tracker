@@ -22,7 +22,7 @@ export default function TabLayout() {
     >
       {/* 🏠 DASHBOARD (first tab) */}
       <Tabs.Screen
-        name="dashboard" // matches app/(tabs)/dashboard.tsx
+        name="dashboard"
         options={{
           tabBarIcon: ({ color }) => (
             <Ionicons name="grid" size={26} color={color} />

@@ -3,9 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const CAT_KEY = "cats";
 const TX_KEY = "txs";
 
-export function initDB() {
-  // nothing required for web
-}
+export function initDB() {}
 
 async function load(key: string, fallback: any) {
   const raw = await AsyncStorage.getItem(key);

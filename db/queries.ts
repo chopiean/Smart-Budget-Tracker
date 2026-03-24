@@ -1,14 +1,7 @@
-import { db } from "./database";
+import { getDB } from "./database";
 
-/* =====================================================
-   TYPES
-===================================================== */
-
-export type CategoryRow = {
-  id: number;
-  name: string;
-};
-
+/* TYPES */
+export type CategoryRow = { id: number; name: string };
 export type TransactionRow = {
   id: number;
   type: "income" | "expense";
@@ -19,20 +12,16 @@ export type TransactionRow = {
   category_name: string | null;
 };
 
-/* =====================================================
-   CATEGORY HELPERS
-===================================================== */
-
+/* CATEGORY HELPERS */
 export async function ensureCategory(name: string): Promise<number | null> {
+  const db = getDB();
   const clean = name.trim();
   if (!clean) return null;
 
-  // Insert category only if missing
   await db.runAsync("INSERT OR IGNORE INTO categories (name) VALUES (?);", [
     clean,
   ]);
 
-  // Fetch category id
   const row = await db.getFirstAsync<CategoryRow>(
     "SELECT id, name FROM categories WHERE name = ?;",
     [clean]
@@ -42,15 +31,13 @@ export async function ensureCategory(name: string): Promise<number | null> {
 }
 
 export async function getCategories(): Promise<CategoryRow[]> {
+  const db = getDB();
   return await db.getAllAsync<CategoryRow>(
     "SELECT id, name FROM categories ORDER BY name ASC;"
   );
 }
 
-/* =====================================================
-   TRANSACTIONS
-===================================================== */
-
+/* TRANSACTIONS */
 export async function addTransaction(data: {
   type: "income" | "expense";
   amount: number;
@@ -58,20 +45,14 @@ export async function addTransaction(data: {
   description: string;
   date: string;
 }): Promise<void> {
+  const db = getDB();
   await db.runAsync(
     `INSERT INTO transactions (type, amount, category_id, description, date)
      VALUES (?, ?, ?, ?, ?);`,
-    [
-      data.type,
-      data.amount,
-      data.category_id, // nullable → allowed
-      data.description,
-      data.date,
-    ]
+    [data.type, data.amount, data.category_id, data.description, data.date]
   );
 }
 
-/* Save using category name */
 export async function addTransactionWithCategoryName(data: {
   type: "income" | "expense";
   amount: number;
@@ -79,8 +60,7 @@ export async function addTransactionWithCategoryName(data: {
   description: string;
   date: string;
 }): Promise<void> {
-  const categoryId: number | null = await ensureCategory(data.categoryName);
-
+  const categoryId = await ensureCategory(data.categoryName);
   await addTransaction({
     type: data.type,
     amount: data.amount,
@@ -90,11 +70,9 @@ export async function addTransactionWithCategoryName(data: {
   });
 }
 
-/* =====================================================
-   QUERIES
-===================================================== */
-
+/* QUERIES */
 export async function getAllTransactions(): Promise<TransactionRow[]> {
+  const db = getDB();
   return await db.getAllAsync<TransactionRow>(
     `SELECT t.*, c.name AS category_name
      FROM transactions t
@@ -104,6 +82,7 @@ export async function getAllTransactions(): Promise<TransactionRow[]> {
 }
 
 export async function getRecentTransactions(): Promise<TransactionRow[]> {
+  const db = getDB();
   return await db.getAllAsync<TransactionRow>(
     `SELECT t.*, c.name AS category_name
      FROM transactions t
@@ -116,6 +95,7 @@ export async function getRecentTransactions(): Promise<TransactionRow[]> {
 export async function getSpendingByCategory(): Promise<
   { category: string; total: number }[]
 > {
+  const db = getDB();
   return await db.getAllAsync<{ category: string; total: number }>(
     `SELECT c.name AS category, SUM(t.amount) AS total
      FROM transactions t

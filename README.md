@@ -1,15 +1,19 @@
-**🛠️ Technologies Used**
-**React Native**
+🛠️ Technologies Used
+React Native
 
 The core framework used to build the mobile application. React Native enables cross-platform development for both Android and iOS using JavaScript and TypeScript.
 
-**Expo**
+Expo
 
-Used as the main development environment and toolchain, providing
-- Fast development workflow with Expo Go
-- Access to native APIs without writing native code
-- Over-the-air updates
-- Easy testing across devices
+Used as the main development environment and toolchain, providing:
+
+Fast development workflow with Expo Go
+
+Access to native APIs without writing native code
+
+Over-the-air updates
+
+Easy testing across devices
 
 **Expo Router**
 
@@ -67,7 +71,7 @@ Used to visualize:
 - Monthly expense trends
 - Adds clarity and insight into the user’s financial data.
 
-**Gesture Handler**
+Gesture Handler
 
 Enhanced user experience with smoother interactions using
 react-native-gesture-handler.

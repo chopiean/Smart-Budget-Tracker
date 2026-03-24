@@ -1,5 +1,5 @@
 // db/settings.ts
-import { db } from "./database";
+import { initDB } from "./database";
 
 export type AppSettings = {
   currency: string;
@@ -8,6 +8,7 @@ export type AppSettings = {
 };
 
 export async function getSettings(): Promise<AppSettings | null> {
+  const db = await initDB();
   const rows = await db.getAllAsync<any>("SELECT * FROM settings LIMIT 1;");
   if (rows.length === 0) return null;
 
@@ -20,6 +21,7 @@ export async function getSettings(): Promise<AppSettings | null> {
 }
 
 export async function saveSettings(s: AppSettings): Promise<void> {
+  const db = await initDB();
   await db.runAsync(
     `
     INSERT INTO settings (id, currency, daily_reminder, budget_limit)
