@@ -1,20 +1,34 @@
 import { getCategories } from "@/db/queries";
-import { useEffect, useState } from "react";
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
+import {
+  Alert,
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 export default function CategoriesScreen() {
   const [categories, setCategories] = useState<{ id: number; name: string }[]>(
     []
   );
 
-  useEffect(() => {
-    load();
-  }, []);
-
   const load = async () => {
-    const data = await getCategories();
-    setCategories(data);
+    try {
+      const data = await getCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error("Failed to load categories", error);
+      Alert.alert("Error", "Failed to load categories");
+    }
   };
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.safe}>
