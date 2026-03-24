@@ -7,7 +7,6 @@ import { getMonthlyReports } from "../../db/reports";
 import { useBudget } from "../../hooks/useBudget";
 
 export default function ReportsScreen() {
-  // from useBudget: auto-updates categories + built-in monthly data
   const { byCategory } = useBudget();
 
   const [monthlyTrend, setMonthlyTrend] = useState<
@@ -25,12 +24,10 @@ export default function ReportsScreen() {
     setMonthlyTrend(trend);
   }
 
-  // Load once on mount
   useEffect(() => {
     loadReports();
   }, []);
 
-  // Refresh whenever screen is focused
   useFocusEffect(
     useCallback(() => {
       loadReports();
@@ -44,7 +41,7 @@ export default function ReportsScreen() {
 
         {/* CATEGORY PIE */}
         <View style={styles.card}>
-          <Text style={styles.section}>Spending by Category</Text>
+          <Text style={styles.section}>Totals by Category</Text>
           <ChartPie data={byCategory} />
         </View>
 

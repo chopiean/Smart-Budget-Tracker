@@ -12,6 +12,12 @@ export type MonthlyReport = {
   transactions: TransactionRow[];
 };
 
+export type SummaryReport = {
+  totalIncome: number;
+  totalExpense: number;
+  netBalance: number;
+};
+
 // Format to YYYY-MM
 function formatMonth(date: string): string {
   const d = new Date(date);
@@ -60,4 +66,44 @@ export async function getMonthlyReports(): Promise<MonthlyReport[]> {
   }
 
   return Object.values(monthlyMap).sort((a, b) => (a.month < b.month ? 1 : -1));
+}
+
+export async function getIncomeExpenseSummary(): Promise<SummaryReport> {
+  const all = await getAllTransactions();
+
+  let totalIncome = 0;
+  let totalExpense = 0;
+
+  for (const tx of all) {
+    if (tx.type === "income") {
+      totalIncome += tx.amount;
+    } else {
+      totalExpense += tx.amount;
+    }
+  }
+
+  return {
+    totalIncome,
+    totalExpense,
+    netBalance: totalIncome - totalExpense,
+  };
+}
+
+export async function getOverallCategoryTotals(): Promise<
+  { category: string; total: number }[]
+> {
+  const all = await getAllTransactions();
+
+  const categoryMap: Record<string, number> = {};
+
+  for (const tx of all) {
+    const catName =
+      tx.category_name || (tx.type === "income" ? "Income" : "Other");
+
+    categoryMap[catName] = (categoryMap[catName] || 0) + tx.amount;
+  }
+
+  return Object.entries(categoryMap)
+    .map(([category, total]) => ({ category, total }))
+    .sort((a, b) => b.total - a.total);
 }

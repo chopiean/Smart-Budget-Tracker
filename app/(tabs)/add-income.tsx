@@ -31,7 +31,7 @@ export default function AddIncomeScreen() {
       await addTransactionWithCategoryName({
         type: "income",
         amount: value,
-        categoryName: "Income", // ALWAYS use Income category
+        categoryName: "Income",
         description: source || "",
         date: new Date().toISOString(),
       });
@@ -66,7 +66,7 @@ export default function AddIncomeScreen() {
               style={styles.input}
             />
 
-            <Text style={styles.label}>Source</Text>
+            <Text style={styles.label}>Category</Text>
             <TextInput
               value={source}
               onChangeText={setSource}

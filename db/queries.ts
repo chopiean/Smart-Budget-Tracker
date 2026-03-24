@@ -110,7 +110,7 @@ export async function getCategoryTotals(): Promise<
         COALESCE(SUM(t.amount), 0) AS total
      FROM categories c
      LEFT JOIN transactions t 
-       ON t.category_id = c.id AND t.type = 'expense'
+       ON t.category_id = c.id 
      GROUP BY c.id
      ORDER BY total DESC;`
   );
