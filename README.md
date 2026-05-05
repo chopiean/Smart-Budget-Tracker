@@ -1,77 +1,76 @@
-🛠️ Technologies Used
-React Native
+# Smart Personal Budget Tracker
 
-The core framework used to build the mobile application. React Native enables cross-platform development for both Android and iOS using JavaScript and TypeScript.
+Smart Personal Budget Tracker is a mobile application designed to help users manage their finances effectively. It allows users to track income, expenses, and spending categories, visualize financial data through charts, and set monthly budget limits. Built with React Native and Expo, the app ensures a seamless cross-platform experience for both Android and iOS.
 
-Expo
+---
 
-Used as the main development environment and toolchain, providing:
+## 🛠️ Technologies Used
 
-Fast development workflow with Expo Go
+- **React Native** – Core framework for building the mobile app.
+- **Expo** – Fast development, testing with Expo Go, and access to native APIs.
+- **Expo Router** – File-based navigation with tabs and stack screens.
+- **TypeScript** – Improves code quality, maintainability, and error detection.
+- **SQLite / expo-sqlite** – Local database for storing transactions, categories, and settings.
+- **Custom Hooks** – Reusable hooks such as `useTransactions` and `useBudget`.
+- **React Native Components & Styling** – Built with reusable components and a dark neon-themed UI.
+- **Expo Vector Icons** – Icons for tabs, buttons, and UI elements.
+- **Charts** – Pie and bar charts for financial visualization.
+- **Gesture Handler** – Smooth mobile interactions.
 
-Access to native APIs without writing native code
+---
 
-Over-the-air updates
+## 📂 Project Structure
 
-Easy testing across devices
+```bash
+smart-personal-budget-tracker/
+├── app/
+│   ├── dashboard.tsx
+│   ├── add-transaction.tsx
+│   ├── reports.tsx
+│   ├── categories.tsx
+│   └── settings.tsx
+├── components/
+│   ├── GlassCard.tsx
+│   ├── GlassButton.tsx
+│   └── ExpenseCard.tsx
+├── hooks/
+│   ├── useTransactions.ts
+│   └── useBudget.ts
+├── db/
+│   ├── database.ts
+│   ├── queries.ts
+│   └── reports.ts
+├── assets/
+├── package.json
+└── README.md
+```
 
-**Expo Router**
+## 🚀 Features
 
-A file-based navigation system that organizes screens automatically.
-It supports:
-- Nested routes
-- Stack navigation
-- Tab navigation
-- Clean folder-based structure with minimal configuration
+- **Dashboard**: View total balance, income, expenses, and budget usage.
+- **Add Transactions**: Add income or expenses with categories and descriptions.
+- **Reports**: Visualize spending trends and category totals with charts.
+- **Categories**: Track spending by category.
+- **Scan Receipts**: Use OCR to extract totals from receipts.
+- **Settings**: Customize currency, set budget limits, and enable daily reminders.
+- **Offline Support**: All data is stored locally using SQLite.
 
-**TypeScript**
+---
 
-Added static typing to improve:
-- Code quality
-- IntelliSense support
-- Error detection
-- Maintainability
+## 🧩 Installation
 
-**SQLite (expo-sqlite)**
+1. Clone the repository:
 
-A local database used for storing:
-- Expenses
-- Income
-- Categories
-- Monthly summaries
-SQLite ensures offline-first performance, fast reads, and persistent local storage.
+   ```bash
+   git clone https://github.com/your-username/smart-personal-budget-tracker.git
+   cd smart-personal-budget-tracker
 
-**Custom Hooks**
+   ```
 
-Implemented reusable hooks such as:
-- useTransactions
-- useBudget
-These manage data loading, refreshing, and screen updates in a clean and modular way.
+2. Install dependencies:
 
-**React Native Components & Styling**
+   `npm install`
 
-UI built using:
-- StyleSheet API
-- Custom reusable components (GlassCard, GlassButton, ExpenseCard)
-- A consistent dark theme with neon green accents
-- Modern and minimalistic layout
+3. Start the development server:
 
-**Expo Vector Icons**
-
-Provides the icons used in:
-- Bottom tab bar
-- Action buttons
-- UI elements
-Ensures a clean, polished, and consistent visual style.
-
-**Charts (Pie & Bar Charts)**
-
-Used to visualize:
-- Spending by category
-- Monthly expense trends
-- Adds clarity and insight into the user’s financial data.
-
-Gesture Handler
-
-Enhanced user experience with smoother interactions using
-react-native-gesture-handler.
+   `npm start`
