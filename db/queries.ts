@@ -1,6 +1,5 @@
 import { initDB } from "./database";
 
-/* TYPES */
 export type CategoryRow = { id: number; name: string };
 export type TransactionRow = {
   id: number;
@@ -12,7 +11,6 @@ export type TransactionRow = {
   category_name: string | null;
 };
 
-/* CATEGORY HELPERS */
 export async function ensureCategory(name: string): Promise<number | null> {
   const db = await initDB();
   const clean = name.trim();

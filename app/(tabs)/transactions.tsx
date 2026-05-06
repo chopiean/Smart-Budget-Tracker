@@ -13,13 +13,24 @@ export default function TransactionsScreen() {
     }, [refresh])
   );
 
+  // Filter only current month transactions
+  const currentMonthTransactions = transactions.filter((tx) => {
+    const txDate = new Date(tx.date);
+    const today = new Date();
+
+    return (
+      txDate.getMonth() === today.getMonth() &&
+      txDate.getFullYear() === today.getFullYear()
+    );
+  });
+
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-        <Text style={styles.title}>All Transactions</Text>
+        <Text style={styles.title}>Monthly Transactions</Text>
 
         <FlatList
-          data={transactions}
+          data={currentMonthTransactions}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <View style={{ paddingHorizontal: 4 }}>
@@ -31,9 +42,10 @@ export default function TransactionsScreen() {
           }}
           ListEmptyComponent={
             <View style={styles.emptyBox}>
-              <Text style={styles.emptyText}>No transactions yet</Text>
+              <Text style={styles.emptyText}>No transactions this month</Text>
+
               <Text style={styles.emptySub}>
-                Add expenses, income, or scan receipts.
+                Add expenses or income to track your monthly budget.
               </Text>
             </View>
           }
@@ -71,5 +83,6 @@ const styles = StyleSheet.create({
   emptySub: {
     color: "#4ade8055",
     fontSize: 14,
+    textAlign: "center",
   },
 });

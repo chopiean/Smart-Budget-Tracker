@@ -20,7 +20,6 @@ export default function TabLayout() {
         tabBarInactiveTintColor: "#6c748a",
       }}
     >
-      {/* 🏠 DASHBOARD (first tab) */}
       <Tabs.Screen
         name="dashboard"
         options={{
@@ -44,15 +43,6 @@ export default function TabLayout() {
         options={{
           tabBarIcon: ({ color }) => (
             <Ionicons name="add-circle" size={32} color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="scan-receipt"
-        options={{
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="camera" size={25} color={color} />
           ),
         }}
       />

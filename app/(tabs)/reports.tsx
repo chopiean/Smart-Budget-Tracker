@@ -3,11 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import { ChartBar } from "../../components/ChartBar";
 import { ChartPie } from "../../components/ChartPie";
-import {
-  getIncomeExpenseSummary,
-  getMonthlyReports,
-  getOverallCategoryTotals,
-} from "../../db/reports";
+import { getMonthlyReports } from "../../db/reports";
 
 type BarItem = {
   category: string;
@@ -32,28 +28,54 @@ export default function ReportsScreen() {
   async function loadReports() {
     try {
       const reports = await getMonthlyReports();
-      const totals = await getIncomeExpenseSummary();
-      const categories = await getOverallCategoryTotals();
 
-      const expenseTrend = reports.map((r) => ({
-        category: r.month,
-        total: r.totalExpense,
-      }));
+      const today = new Date();
+      const currentMonth = `${today.getFullYear()}-${String(
+        today.getMonth() + 1
+      ).padStart(2, "0")}`;
 
-      const incomeTrend = reports.map((r) => ({
-        category: r.month,
-        total: r.totalIncome,
-      }));
+      const currentReport = reports.find((r) => r.month === currentMonth);
 
-      const pieData = categories.map((item) => ({
-        name: item.category,
-        value: item.total,
-      }));
+      if (!currentReport) {
+        setMonthlyExpenseTrend([]);
+        setMonthlyIncomeTrend([]);
+        setCategoryTotals([]);
+        setSummary({
+          totalIncome: 0,
+          totalExpense: 0,
+          netBalance: 0,
+        });
+        return;
+      }
 
-      setMonthlyExpenseTrend(expenseTrend);
-      setMonthlyIncomeTrend(incomeTrend);
+      const pieData = Object.entries(currentReport.byCategory).map(
+        ([category, total]) => ({
+          name: category,
+          value: total,
+        })
+      );
+
+      setMonthlyExpenseTrend([
+        {
+          category: currentMonth,
+          total: currentReport.totalExpense,
+        },
+      ]);
+
+      setMonthlyIncomeTrend([
+        {
+          category: currentMonth,
+          total: currentReport.totalIncome,
+        },
+      ]);
+
       setCategoryTotals(pieData);
-      setSummary(totals);
+
+      setSummary({
+        totalIncome: currentReport.totalIncome,
+        totalExpense: currentReport.totalExpense,
+        netBalance: currentReport.netBalance,
+      });
     } catch (error) {
       console.error("Failed to load reports:", error);
     }
@@ -72,7 +94,7 @@ export default function ReportsScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Reports</Text>
+        <Text style={styles.title}>Monthly Reports</Text>
 
         <View style={styles.summaryRow}>
           <View style={styles.summaryCard}>

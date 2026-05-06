@@ -1,4 +1,4 @@
-import { getCategoryTotals } from "@/db/queries";
+import { getAllTransactions, type TransactionRow } from "@/db/queries";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import {
@@ -19,8 +19,33 @@ export default function CategoriesScreen() {
 
   const load = async () => {
     try {
-      const data = await getCategoryTotals();
-      setCategories(data);
+      const data = await getAllTransactions();
+
+      const today = new Date();
+
+      const currentMonthExpenses = data.filter((t) => {
+        const txDate = new Date(t.date);
+
+        return (
+          t.type === "expense" &&
+          txDate.getMonth() === today.getMonth() &&
+          txDate.getFullYear() === today.getFullYear()
+        );
+      });
+
+      const categoryMap: Record<string, number> = {};
+
+      currentMonthExpenses.forEach((t) => {
+        const category = t.category_name || "Other";
+        categoryMap[category] = (categoryMap[category] || 0) + t.amount;
+      });
+
+      const result = Object.entries(categoryMap).map(([category, total]) => ({
+        category,
+        total,
+      }));
+
+      setCategories(result);
     } catch (error) {
       console.error("Failed to load categories", error);
       Alert.alert("Error", "Failed to load categories");

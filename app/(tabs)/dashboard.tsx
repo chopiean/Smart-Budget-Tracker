@@ -31,12 +31,23 @@ export default function DashboardScreen() {
         getSettings(),
       ]);
 
-      setTransactions(data);
+      const today = new Date();
+
+      const currentMonthData = data.filter((t) => {
+        const txDate = new Date(t.date);
+
+        return (
+          txDate.getMonth() === today.getMonth() &&
+          txDate.getFullYear() === today.getFullYear()
+        );
+      });
+
+      setTransactions(currentMonthData);
 
       let income = 0;
       let expense = 0;
 
-      data.forEach((t) => {
+      currentMonthData.forEach((t) => {
         if (t.type === "income") income += t.amount;
         else expense += t.amount;
       });
@@ -131,12 +142,6 @@ export default function DashboardScreen() {
           variant="blue"
           style={{ flex: 1, marginRight: 6 }}
           onPress={() => router.push("/add-expense")}
-        />
-        <GlassButton
-          label="Scan Receipt"
-          variant="purple"
-          style={{ flex: 1, marginLeft: 6 }}
-          onPress={() => router.push("/scan-receipt")}
         />
       </View>
 
