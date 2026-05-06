@@ -21,14 +21,14 @@ export default function ScanReceiptScreen() {
   const { extractFromImage } = useOCR();
 
   const [detectedTotal, setDetectedTotal] = useState<number | null>(null);
-  const [category, setCategory] = useState<string>("Grocery"); // default
+  const [category, setCategory] = useState<string>("Grocery");
   const router = useRouter();
 
   useEffect(() => {
     if (!permission?.granted) {
       requestPermission();
     }
-  }, [permission?.granted, requestPermission]);
+  }, [permission?.granted]);
 
   const handleCapture = async () => {
     if (!cameraRef.current) return;
@@ -49,7 +49,7 @@ export default function ScanReceiptScreen() {
   };
 
   const handleSave = async () => {
-    if (!detectedTotal) {
+    if (detectedTotal === null) {
       Alert.alert("No total detected");
       return;
     }
@@ -89,12 +89,10 @@ export default function ScanReceiptScreen() {
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Scan Receipt</Text>
 
-        {/* Camera */}
         <View style={styles.cameraWrapper}>
           <CameraView ref={cameraRef} style={styles.camera} />
         </View>
 
-        {/* Capture Button */}
         {capturing ? (
           <ActivityIndicator
             size="large"
@@ -107,18 +105,19 @@ export default function ScanReceiptScreen() {
           </TouchableOpacity>
         )}
 
-        {/* Detected Amount */}
         <View style={styles.resultCard}>
           <Text style={styles.resultLabel}>Detected Total</Text>
           <Text style={styles.resultValue}>
-            {detectedTotal ? `€${detectedTotal.toFixed(2)}` : "—"}
+            {detectedTotal !== null ? `€${detectedTotal.toFixed(2)}` : "—"}
           </Text>
         </View>
 
-        {/* Save Button */}
         <TouchableOpacity
-          style={[styles.saveButton, !detectedTotal && { opacity: 0.5 }]}
-          disabled={!detectedTotal}
+          style={[
+            styles.saveButton,
+            detectedTotal === null && { opacity: 0.5 },
+          ]}
+          disabled={detectedTotal === null}
           onPress={handleSave}
         >
           <Text style={styles.saveButtonText}>Save as Expense</Text>
@@ -127,8 +126,6 @@ export default function ScanReceiptScreen() {
     </SafeAreaView>
   );
 }
-
-/* -------------------- STYLES ------------------------ */
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#0b1020" },
